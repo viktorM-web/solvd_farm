@@ -7,7 +7,7 @@ public interface Dao<K, E> {
 
     boolean delete(K id);
 
-    E save(E entity);
+    void save(E entity);
 
     void update(E entity);
 

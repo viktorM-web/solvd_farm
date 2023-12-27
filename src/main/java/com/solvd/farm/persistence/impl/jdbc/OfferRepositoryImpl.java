@@ -1,13 +1,12 @@
-package com.solvd.farm.persistence.impl;
+package com.solvd.farm.persistence.impl.jdbc;
 
-import com.solvd.farm.domain.User;
-import com.solvd.farm.domain.enums.Role;
+import com.solvd.farm.domain.Offer;
+import com.solvd.farm.domain.enums.TypeOffer;
 import com.solvd.farm.exception.DaoException;
-import com.solvd.farm.persistence.UserRepository;
+import com.solvd.farm.persistence.OfferRepository;
 import com.solvd.farm.util.ConnectionPool;
 import lombok.extern.slf4j.Slf4j;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -16,35 +15,44 @@ import java.util.List;
 import java.util.Optional;
 
 @Slf4j
-public class UserRepositoryImpl implements UserRepository {
+public class OfferRepositoryImpl implements OfferRepository {
 
-    private static final UserRepositoryImpl INSTANCE = new UserRepositoryImpl();
+    private static final OfferRepositoryImpl INSTANCE = new OfferRepositoryImpl();
+    private static final ShopRepositoryImpl SHOP_REPOSITORY = ShopRepositoryImpl.getInstance();
 
     private static final String DELETE_SQL = """
-            DELETE FROM users
+            DELETE FROM offers
             WHERE id=?
             """;
     private static final String SAVE_SQL = """
-            INSERT INTO users (login, password, role)
-            VALUES (?, ?, ?)
+            INSERT INTO offers (type, description, price, shop_id)
+            VALUES (?, ?, ?, ?)
             """;
     private static final String UPDATE_SQL = """
-            UPDATE users
-            SET login = ?,
-                password = ?,
-                role = ?
+            UPDATE offers
+            SET type = ?,
+                description = ?,
+                price = ?,
+                shop_id = ?
             WHERE id=?
             """;
     private static final String FIND_ALL_SQL = """
-            SELECT id,
-                login,
-                password,
-                role
-            FROM users
+            SELECT type,
+                description,
+                price,
+                shop_id
+            FROM offers
             """;
     private static final String FIND_BY_ID = FIND_ALL_SQL + """
-            WHERE users.id=?
+            WHERE offers.id=?
             """;
+
+    private OfferRepositoryImpl() {
+    }
+
+    public static OfferRepositoryImpl getInstance() {
+        return INSTANCE;
+    }
 
     @Override
     public boolean delete(Long id) {
@@ -61,21 +69,26 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public User save(User user) {
+    public void save(Offer offer) {
+        getSaved(offer);
+    }
+
+    public Offer getSaved(Offer offer) {
         try (var connection = ConnectionPool.get();
              var preparedStatement = connection.prepareStatement(SAVE_SQL, Statement.RETURN_GENERATED_KEYS)) {
-            preparedStatement.setString(1, user.getLogin());
-            preparedStatement.setString(2, user.getPassword());
-            preparedStatement.setString(3, user.getRole().name());
+            preparedStatement.setString(1, offer.getType().name());
+            preparedStatement.setString(2, offer.getDescription());
+            preparedStatement.setDouble(3, offer.getPrice());
+            preparedStatement.setLong(4, offer.getShop().getId());
 
             preparedStatement.executeUpdate();
 
             var generatedKeys = preparedStatement.getGeneratedKeys();
             if (generatedKeys.next()) {
                 long id = generatedKeys.getLong("GENERATED_KEY");
-                user.setId(id);
+                offer.setId(id);
             }
-            return user;
+            return offer;
         } catch (SQLException e) {
             log.error(e.getMessage());
             throw new DaoException(e);
@@ -83,13 +96,14 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public void update(User user) {
+    public void update(Offer offer) {
         try (var connection = ConnectionPool.get();
              var preparedStatement = connection.prepareStatement(UPDATE_SQL)) {
-            preparedStatement.setString(1, user.getLogin());
-            preparedStatement.setString(2, user.getPassword());
-            preparedStatement.setString(3, user.getRole().name());
-            preparedStatement.setLong(4, user.getId());
+            preparedStatement.setString(1, offer.getType().name());
+            preparedStatement.setString(2, offer.getDescription());
+            preparedStatement.setDouble(3, offer.getPrice());
+            preparedStatement.setLong(4, offer.getShop().getId());
+            preparedStatement.setLong(5, offer.getId());
 
             preparedStatement.executeUpdate();
 
@@ -100,24 +114,16 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public Optional<User> findById(Long id) {
-        try (var connection = ConnectionPool.get()) {
-            return findById(id, connection);
-        } catch (SQLException e) {
-            log.error(e.getMessage());
-            throw new DaoException(e);
-        }
-    }
-
-    public Optional<User> findById(Long id, Connection connection) {
-        try (var preparedStatement = connection.prepareStatement(FIND_BY_ID)) {
+    public Optional<Offer> findById(Long id) {
+        try (var connection = ConnectionPool.get();
+             var preparedStatement = connection.prepareStatement(FIND_BY_ID)) {
             preparedStatement.setLong(1, id);
             var resultSet = preparedStatement.executeQuery();
-            User user = null;
+            Offer offer = null;
             if (resultSet.next()) {
-                user = buildUser(resultSet);
+                offer = buildOffer(resultSet);
             }
-            return Optional.ofNullable(user);
+            return Optional.ofNullable(offer);
         } catch (SQLException e) {
             log.error(e.getMessage());
             throw new DaoException(e);
@@ -125,13 +131,13 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public List<User> findAll() {
+    public List<Offer> findAll() {
         try (var connection = ConnectionPool.get();
              var preparedStatement = connection.prepareStatement(FIND_ALL_SQL)) {
             var resultSet = preparedStatement.executeQuery();
-            List<User> result = new ArrayList<>();
+            List<Offer> result = new ArrayList<>();
             while (resultSet.next()) {
-                result.add(buildUser(resultSet));
+                result.add(buildOffer(resultSet));
             }
             return result;
         } catch (SQLException e) {
@@ -140,19 +146,16 @@ public class UserRepositoryImpl implements UserRepository {
         }
     }
 
-    private User buildUser(ResultSet resultSet) throws SQLException {
-        return new User(
+    private static Offer buildOffer(ResultSet resultSet) throws SQLException {
+        return new Offer(
                 resultSet.getLong("id"),
-                resultSet.getString("login"),
-                resultSet.getString("password"),
-                Role.valueOf(resultSet.getString("role"))
+                TypeOffer.valueOf(resultSet.getString("type")),
+                resultSet.getString("description"),
+                resultSet.getDouble("price"),
+                SHOP_REPOSITORY.findById(
+                        resultSet.getLong("shop_id"),
+                        resultSet.getStatement().getConnection()
+                ).orElse(null)
         );
-    }
-
-    private UserRepositoryImpl() {
-    }
-
-    public static UserRepositoryImpl getInstance() {
-        return INSTANCE;
     }
 }

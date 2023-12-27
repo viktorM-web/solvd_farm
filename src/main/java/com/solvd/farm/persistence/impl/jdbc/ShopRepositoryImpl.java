@@ -1,4 +1,4 @@
-package com.solvd.farm.persistence.impl;
+package com.solvd.farm.persistence.impl.jdbc;
 
 import com.solvd.farm.domain.Shop;
 import com.solvd.farm.exception.DaoException;
@@ -66,7 +66,11 @@ public class ShopRepositoryImpl implements ShopRepository {
     }
 
     @Override
-    public Shop save(Shop shop) {
+    public void save(Shop shop) {
+        getSaved(shop);
+    }
+
+    public Shop getSaved(Shop shop) {
         try (var connection = ConnectionPool.get();
              var preparedStatement = connection.prepareStatement(SAVE_SQL, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, shop.getName());

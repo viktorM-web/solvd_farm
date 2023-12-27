@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.solvd.farm.persistence.ItemRepository">
+
+    <insert id="save" keyColumn="id" keyProperty="id" useGeneratedKeys="true">
+        Insert into items (type, count, farm_id) values (#{type}, #{count}, #{farm.id})
+    </insert>
+
+    <sql id="itemSelect">
+        Select
+        items.id id,
+        items.type type,
+        items.count count,
+        farms.id farms_id,
+        farms.name farms_name,
+        farms.budget farms_budget,
+        users.id users_id,
+        users.login users_login,
+        users.password users_password,
+        users.role users_role
+        from items
+        left join farms on farms.id=items.farm_id
+        left join users on users.id=farms.user_id
+    </sql>
+
+    <select id="findById" resultMap="ItemResultMap">
+        <include refid="itemSelect"/>
+        where items.id=#{id}
+    </select>
+
+    <select id="findAll" resultMap="ItemResultMap">
+        <include refid="itemSelect"/>
+    </select>
+
+    <update id="update">
+        Update items set type = #{type}, count = #{count}, farm_id = #{farm.id} WHERE id=#{id}
+    </update>
+
+    <delete id="delete">
+        Delete from items where id=#{id}
+    </delete>
+
+    <resultMap id="ItemResultMap" type="com.solvd.farm.domain.Item" autoMapping="false">
+        <id column="id" property="id"/>
+        <result column="type" property="type"/>
+        <result column="count" property="count"/>
+        <association property="farm" columnPrefix="FARMS_" javaType="com.solvd.farm.domain.Farm"
+                     resultMap="FarmResultMap"/>
+    </resultMap>
+    <resultMap id="FarmResultMap" type="com.solvd.farm.domain.Farm" autoMapping="false">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="budget" property="budget"/>
+        <association property="user" columnPrefix="USERS_" javaType="com.solvd.farm.domain.User"
+                     resultMap="UserResultMap"/>
+    </resultMap>
+    <resultMap id="UserResultMap" type="com.solvd.farm.domain.User" autoMapping="false">
+        <id column="id" property="id"/>
+        <result column="login" property="login"/>
+        <result column="password" property="password"/>
+        <result column="role" property="role"/>
+    </resultMap>
+</mapper>

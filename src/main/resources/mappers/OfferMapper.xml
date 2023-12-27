@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.solvd.farm.persistence.OfferRepository">
+
+    <insert id="save" keyColumn="id" keyProperty="id" useGeneratedKeys="true">
+        Insert into offers (type, description, price, shop_id) values (#{type}, #{description}, #{price}, #{shop.id})
+    </insert>
+
+    <sql id="offerSelect">
+        Select
+        offers.id id,
+        offers.type type,
+        offers.description description,
+        offers.price price,
+        shops.id shops_id,
+        shops.name shops_name,
+        users.id users_id,
+        users.login users_login,
+        users.password users_password,
+        users.role users_role
+        from offers
+        left join shops on shops.id=offers.shop_id
+        left join users on users.id=shops.user_id
+    </sql>
+
+    <select id="findById" resultMap="OfferResultMap">
+        <include refid="offerSelect"/>
+        where offers.id=#{id}
+    </select>
+
+    <select id="findAll" resultMap="OfferResultMap">
+        <include refid="offerSelect"/>
+    </select>
+
+    <update id="update">
+        Update offers set type = #{type}, description = #{description}, price = #{price}, type = #{type}, shop_id =
+        #{shop.id} WHERE id=#{id}
+    </update>
+
+    <delete id="delete">
+        Delete from offers where id=#{id}
+    </delete>
+
+    <resultMap id="OfferResultMap" type="com.solvd.farm.domain.Offer" autoMapping="false">
+        <id column="id" property="id"/>
+        <result column="type" property="type"/>
+        <result column="description" property="description"/>
+        <result column="price" property="price"/>
+        <association property="shop" columnPrefix="SHOPS_" javaType="com.solvd.farm.domain.Offer"
+                     resultMap="ShopResultMap"/>
+    </resultMap>
+    <resultMap id="ShopResultMap" type="com.solvd.farm.domain.Shop" autoMapping="false">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <association property="user" columnPrefix="USERS_" javaType="com.solvd.farm.domain.User"
+                     resultMap="UserResultMap"/>
+    </resultMap>
+    <resultMap id="UserResultMap" type="com.solvd.farm.domain.User" autoMapping="false">
+        <id column="id" property="id"/>
+        <result column="login" property="login"/>
+        <result column="password" property="password"/>
+        <result column="role" property="role"/>
+    </resultMap>
+</mapper>

@@ -1,4 +1,4 @@
-package com.solvd.farm.persistence.impl;
+package com.solvd.farm.persistence.impl.jdbc;
 
 import com.solvd.farm.domain.Feed;
 import com.solvd.farm.domain.enums.TypeFeed;
@@ -67,7 +67,11 @@ public class FeedRepositoryImpl implements FeedRepository {
     }
 
     @Override
-    public Feed save(Feed feed) {
+    public void save(Feed feed) {
+        getSaved(feed);
+    }
+
+    public Feed getSaved(Feed feed) {
         try (var connection = ConnectionPool.get();
              var preparedStatement = connection.prepareStatement(SAVE_SQL, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, feed.getType().name());

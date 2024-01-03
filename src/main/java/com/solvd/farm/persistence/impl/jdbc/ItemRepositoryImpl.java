@@ -31,12 +31,14 @@ public class ItemRepositoryImpl implements ItemRepository {
     private static final String UPDATE_SQL = """
             UPDATE items
             SET type = ?,
-                count = ?
+                count = ?,
                 farm_id = ?
             WHERE id=?
             """;
     private static final String FIND_ALL_SQL = """
-            SELECT type,
+            SELECT 
+                id,
+                type,
                 count,
                 farm_id
             FROM items
@@ -44,6 +46,9 @@ public class ItemRepositoryImpl implements ItemRepository {
     private static final String FIND_BY_ID = FIND_ALL_SQL + """
             WHERE items.id=?
             """;
+
+    private static final String FIND_BY_FARM_ID_AND_TYPE = FIND_ALL_SQL + """
+            WHERE farm_id = ? AND type = ? """;
 
     private ItemRepositoryImpl() {
     }
@@ -152,5 +157,23 @@ public class ItemRepositoryImpl implements ItemRepository {
                         resultSet.getStatement().getConnection()
                 ).orElse(null)
         );
+    }
+
+    @Override
+    public Optional<Item> findByFarmIdAndType(Long id, TypeItem type) {
+        try (var connection = ConnectionPool.get();
+             var preparedStatement = connection.prepareStatement(FIND_BY_FARM_ID_AND_TYPE)) {
+            preparedStatement.setLong(1, id);
+            preparedStatement.setString(2, type.name());
+            var resultSet = preparedStatement.executeQuery();
+            Item item = null;
+            if (resultSet.next()) {
+                item = buildItem(resultSet);
+            }
+            return Optional.ofNullable(item);
+        } catch (SQLException e) {
+            log.error(e.getMessage());
+            throw new DaoException(e);
+        }
     }
 }

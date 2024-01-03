@@ -10,6 +10,16 @@ import java.util.Optional;
 
 public class UserRepositoryImpl implements UserRepository {
 
+    private static final UserRepositoryImpl INSTANCE = new UserRepositoryImpl();
+
+    private UserRepositoryImpl() {
+    }
+
+    public static
+    UserRepositoryImpl getInstance() {
+        return INSTANCE;
+    }
+
     @Override
     public boolean delete(Long id) {
         try (SqlSession session = MyBatisSessionFactory.getSession()) {
@@ -47,6 +57,14 @@ public class UserRepositoryImpl implements UserRepository {
         try (SqlSession session = MyBatisSessionFactory.getSession()) {
             UserRepository mapper = session.getMapper(UserRepository.class);
             return mapper.findAll();
+        }
+    }
+
+    @Override
+    public Optional<User> findBy(String login, String password) {
+        try (SqlSession session = MyBatisSessionFactory.getSession()) {
+            UserRepository mapper = session.getMapper(UserRepository.class);
+            return mapper.findBy(login, password);
         }
     }
 }

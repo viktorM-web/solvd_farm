@@ -29,6 +29,11 @@
         where feeds.id=#{id}
     </select>
 
+    <select id="findByFarmIdAndType" resultMap="FeedResultMap">
+        <include refid="feedSelect"/>
+        WHERE farm_id = #{id} AND type = #{type}
+    </select>
+
     <select id="findAll" resultMap="FeedResultMap">
         <include refid="feedSelect"/>
     </select>

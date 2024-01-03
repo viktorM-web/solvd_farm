@@ -15,4 +15,5 @@ public class Offer {
     private String description;
     private Double price;
     private Shop shop;
+
 }

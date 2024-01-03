@@ -22,7 +22,7 @@ public class AnimalRepositoryImpl implements AnimalRepository {
 
     private static final String DELETE_SQL = """
             DELETE FROM animals
-            WHERE animal.id=?
+            WHERE animals.id=?
             """;
     private static final String SAVE_SQL = """
             INSERT INTO animals (type, age, weight, farm_id)
@@ -47,6 +47,15 @@ public class AnimalRepositoryImpl implements AnimalRepository {
             """;
     private static final String FIND_BY_ID = FIND_ALL_SQL + """
             WHERE animals.id=?
+            """;
+    private static final String FIND_BY_ID_AND_FARM_ID = FIND_ALL_SQL + """
+            WHERE animals.id=? and farm_id=?
+            """;
+    private static final String FIND_BY_FARM_ID_AND_TYPE = FIND_ALL_SQL + """
+            WHERE farm_id=? and type like ?
+            """;
+    private static final String FIND_BY_FARM_ID = FIND_ALL_SQL + """
+            WHERE farm_id=?
             """;
 
     private AnimalRepositoryImpl() {
@@ -136,6 +145,58 @@ public class AnimalRepositoryImpl implements AnimalRepository {
     public List<Animal> findAll() {
         try (var connection = ConnectionPool.get();
              var preparedStatement = connection.prepareStatement(FIND_ALL_SQL)) {
+            var resultSet = preparedStatement.executeQuery();
+            List<Animal> result = new ArrayList<>();
+            while (resultSet.next()) {
+                result.add(buildAnimal(resultSet));
+            }
+            return result;
+        } catch (SQLException e) {
+            log.error(e.getMessage());
+            throw new DaoException(e);
+        }
+    }
+
+    @Override
+    public List<Animal> findAllBy(Long farmId) {
+        try (var connection = ConnectionPool.get();
+             var preparedStatement = connection.prepareStatement(FIND_BY_FARM_ID)) {
+            preparedStatement.setLong(1, farmId);
+            var resultSet = preparedStatement.executeQuery();
+            List<Animal> result = new ArrayList<>();
+            while (resultSet.next()) {
+                result.add(buildAnimal(resultSet));
+            }
+            return result;
+        } catch (SQLException e) {
+            log.error(e.getMessage());
+            throw new DaoException(e);
+        }
+
+    } @Override
+    public Optional<Animal> findBy(Long id, Long farmId) {
+        try (var connection = ConnectionPool.get();
+             var preparedStatement = connection.prepareStatement(FIND_BY_ID_AND_FARM_ID)) {
+            preparedStatement.setLong(1, id);
+            preparedStatement.setLong(2, farmId);
+            var resultSet = preparedStatement.executeQuery();
+            Animal animal = null;
+            if (resultSet.next()) {
+                animal = buildAnimal(resultSet);
+            }
+            return Optional.ofNullable(animal);
+        } catch (SQLException e) {
+            log.error(e.getMessage());
+            throw new DaoException(e);
+        }
+    }
+
+    @Override
+    public List<Animal> findByFarmIdAndType(Long farmId, TypeAnimal type) {
+        try (var connection = ConnectionPool.get();
+             var preparedStatement = connection.prepareStatement(FIND_BY_FARM_ID_AND_TYPE)) {
+            preparedStatement.setLong(1, farmId);
+            preparedStatement.setString(2, type.name());
             var resultSet = preparedStatement.executeQuery();
             List<Animal> result = new ArrayList<>();
             while (resultSet.next()) {

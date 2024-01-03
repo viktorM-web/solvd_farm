@@ -1,6 +1,7 @@
 package com.solvd.farm.persistence.impl.mybaytis;
 
 import com.solvd.farm.domain.Item;
+import com.solvd.farm.domain.enums.TypeItem;
 import com.solvd.farm.persistence.ItemRepository;
 import com.solvd.farm.util.MyBatisSessionFactory;
 import org.apache.ibatis.session.SqlSession;
@@ -9,6 +10,12 @@ import java.util.List;
 import java.util.Optional;
 
 public class ItemRepositoryImpl implements ItemRepository {
+
+    private static final ItemRepositoryImpl INSTANCE = new ItemRepositoryImpl();
+
+    public static ItemRepositoryImpl getInstance() {
+        return INSTANCE;
+    }
 
     @Override
     public boolean delete(Long id) {
@@ -47,6 +54,14 @@ public class ItemRepositoryImpl implements ItemRepository {
         try (SqlSession session = MyBatisSessionFactory.getSession()) {
             ItemRepository mapper = session.getMapper(ItemRepository.class);
             return mapper.findAll();
+        }
+    }
+
+    @Override
+    public Optional<Item> findByFarmIdAndType(Long id, TypeItem type) {
+        try (SqlSession session = MyBatisSessionFactory.getSession()) {
+            ItemRepository mapper = session.getMapper(ItemRepository.class);
+            return mapper.findByFarmIdAndType(id, type);
         }
     }
 }

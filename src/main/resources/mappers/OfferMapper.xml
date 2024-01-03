@@ -29,6 +29,26 @@
         where offers.id=#{id}
     </select>
 
+    <select id="findAllSellingFeed" resultMap="OfferResultMap">
+        <include refid="offerSelect"/>
+        where type like 'SELL' and description like '%FOR_%'
+    </select>
+
+    <select id="findAllBuyingItem" resultMap="OfferResultMap">
+        <include refid="offerSelect"/>
+        where type like 'BUY' and description like '%ITEM_%'
+    </select>
+
+    <select id="findAllBuyingAnimal" resultMap="OfferResultMap">
+        <include refid="offerSelect"/>
+        where type like 'BUY' and description like '%ANIMAL_%'
+    </select>
+
+    <select id="findAllSellingAnimal" resultMap="OfferResultMap">
+        <include refid="offerSelect"/>
+        where type like 'SELL' and description like '%ANIMAL_%'
+    </select>
+
     <select id="findAll" resultMap="OfferResultMap">
         <include refid="offerSelect"/>
     </select>

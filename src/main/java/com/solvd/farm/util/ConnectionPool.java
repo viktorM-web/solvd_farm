@@ -68,7 +68,7 @@ public class ConnectionPool {
         }
     }
 
-    public static void closePol(){
+    public static void closePool(){
         for (Connection connection: sourceConnections) {
             try {
                 connection.close();

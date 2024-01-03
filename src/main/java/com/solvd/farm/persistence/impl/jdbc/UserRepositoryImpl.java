@@ -45,6 +45,9 @@ public class UserRepositoryImpl implements UserRepository {
     private static final String FIND_BY_ID = FIND_ALL_SQL + """
             WHERE users.id=?
             """;
+    private static final String FIND_BY_LOGIN_AND_PASSWORD = FIND_ALL_SQL + """
+            WHERE login=? AND password=?
+            """;
 
     @Override
     public boolean delete(Long id) {
@@ -116,6 +119,23 @@ public class UserRepositoryImpl implements UserRepository {
     public Optional<User> findById(Long id, Connection connection) {
         try (var preparedStatement = connection.prepareStatement(FIND_BY_ID)) {
             preparedStatement.setLong(1, id);
+            var resultSet = preparedStatement.executeQuery();
+            User user = null;
+            if (resultSet.next()) {
+                user = buildUser(resultSet);
+            }
+            return Optional.ofNullable(user);
+        } catch (SQLException e) {
+            log.error(e.getMessage());
+            throw new DaoException(e);
+        }
+    }
+
+    public Optional<User> findBy(String login, String password) {
+        try (var connection = ConnectionPool.get();
+             var preparedStatement = connection.prepareStatement(FIND_BY_LOGIN_AND_PASSWORD)) {
+            preparedStatement.setString(1, login);
+            preparedStatement.setString(2, password);
             var resultSet = preparedStatement.executeQuery();
             User user = null;
             if (resultSet.next()) {

@@ -28,12 +28,12 @@ values  ('shop1', 1);
  create table if not exists farms(
   id serial primary key,
   name varchar(45) not null unique,
-  badget double unsigned not null,
+  budget double unsigned not null,
   user_id bigint unsigned,
   constraint fk_farm_user foreign key (user_id) references users(id) on update no action on delete no action
  );
 
-insert into farms(name, badget, user_id)
+insert into farms(name, budget, user_id)
 values  ('Sunrise', 2500.70, 3),
 		('Byrenka', 35000.80, 4);
 
@@ -48,15 +48,18 @@ create table if not exists offers (
 );
 
 insert into offers(type, description, price, shop_id)
-values  ('BUY', 'EGG', 1.05, 1),
-		('BUY', 'MILK', 1.45, 1),
-		('BUY', 'MEAT', 2.055, 1),
-        ('SEL', 'PIG', 100.33, 1),
-        ('SEL', 'COW', 420.51, 1),
-		('SEL', 'CHICKEN', 10.21, 1),
-        ('SEL', 'FOR_PIG', 22.33, 1),
-        ('SEL', 'FOR_COW', 55.51, 1),
-		('SEL', 'FOR_CHICKEN', 5.21, 1);
+values  ('BUY', 'ITEM_EGG', 1.05, 1),
+		('BUY', 'ITEM_MILK', 1.45, 1),
+		('BUY', 'ITEM_MEAT', 2.055, 1),
+        ('BUY', 'ANIMAL_PIG', 90.22, 1),
+        ('BUY', 'ANIMAL_COW', 390.30, 1),
+		('BUY', 'ANIMAL_CHICKEN', 5.11, 1),
+        ('SELL', 'ANIMAL_PIG', 100.33, 1),
+        ('SELL', 'ANIMAL_COW', 420.51, 1),
+		('SELL', 'ANIMAL_CHICKEN', 10.21, 1),
+        ('SELL', 'FOR_PIG', 22.33, 1),
+        ('SELL', 'FOR_COW', 55.51, 1),
+		('SELL', 'FOR_CHICKEN', 5.21, 1);
 
 
 create table if not exists animals (

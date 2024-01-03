@@ -37,7 +37,9 @@ public class OfferRepositoryImpl implements OfferRepository {
             WHERE id=?
             """;
     private static final String FIND_ALL_SQL = """
-            SELECT type,
+            SELECT 
+                id,
+                type,
                 description,
                 price,
                 shop_id
@@ -45,6 +47,18 @@ public class OfferRepositoryImpl implements OfferRepository {
             """;
     private static final String FIND_BY_ID = FIND_ALL_SQL + """
             WHERE offers.id=?
+            """;
+    private static final String FIND_SELLING_FEED = FIND_ALL_SQL + """
+            WHERE type like 'SELL' and description like '%FOR_%'
+            """;
+    private static final String FIND_BUYING_ITEM = FIND_ALL_SQL + """
+            WHERE type like 'BUY' and description like '%ITEM_%'
+            """;
+    private static final String FIND_BUYING_ANIMAL = FIND_ALL_SQL + """
+            WHERE type like 'BUY' and description like '%ANIMAL_%'
+            """;
+    private static final String FIND_SELLING_ANIMAL = FIND_ALL_SQL + """
+            WHERE type like 'SELL' and description like '%ANIMAL_%'
             """;
 
     private OfferRepositoryImpl() {
@@ -134,6 +148,69 @@ public class OfferRepositoryImpl implements OfferRepository {
     public List<Offer> findAll() {
         try (var connection = ConnectionPool.get();
              var preparedStatement = connection.prepareStatement(FIND_ALL_SQL)) {
+            var resultSet = preparedStatement.executeQuery();
+            List<Offer> result = new ArrayList<>();
+            while (resultSet.next()) {
+                result.add(buildOffer(resultSet));
+            }
+            return result;
+        } catch (SQLException e) {
+            log.error(e.getMessage());
+            throw new DaoException(e);
+        }
+    }
+
+    public List<Offer> findAllSellingFeed() {
+        try (var connection = ConnectionPool.get();
+             var preparedStatement = connection.prepareStatement(FIND_SELLING_FEED)) {
+            var resultSet = preparedStatement.executeQuery();
+            List<Offer> result = new ArrayList<>();
+            while (resultSet.next()) {
+                result.add(buildOffer(resultSet));
+            }
+            return result;
+        } catch (SQLException e) {
+            log.error(e.getMessage());
+            throw new DaoException(e);
+        }
+    }
+
+    @Override
+    public List<Offer> findAllBuyingItem() {
+        try (var connection = ConnectionPool.get();
+             var preparedStatement = connection.prepareStatement(FIND_BUYING_ITEM)) {
+            var resultSet = preparedStatement.executeQuery();
+            List<Offer> result = new ArrayList<>();
+            while (resultSet.next()) {
+                result.add(buildOffer(resultSet));
+            }
+            return result;
+        } catch (SQLException e) {
+            log.error(e.getMessage());
+            throw new DaoException(e);
+        }
+    }
+
+    @Override
+    public List<Offer> findAllBuyingAnimal() {
+        try (var connection = ConnectionPool.get();
+             var preparedStatement = connection.prepareStatement(FIND_BUYING_ANIMAL)) {
+            var resultSet = preparedStatement.executeQuery();
+            List<Offer> result = new ArrayList<>();
+            while (resultSet.next()) {
+                result.add(buildOffer(resultSet));
+            }
+            return result;
+        } catch (SQLException e) {
+            log.error(e.getMessage());
+            throw new DaoException(e);
+        }
+    }
+
+    @Override
+    public List<Offer> findAllSellingAnimal() {
+        try (var connection = ConnectionPool.get();
+             var preparedStatement = connection.prepareStatement(FIND_SELLING_ANIMAL)) {
             var resultSet = preparedStatement.executeQuery();
             List<Offer> result = new ArrayList<>();
             while (resultSet.next()) {

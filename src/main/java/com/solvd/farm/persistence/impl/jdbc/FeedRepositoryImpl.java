@@ -1,7 +1,9 @@
 package com.solvd.farm.persistence.impl.jdbc;
 
 import com.solvd.farm.domain.Feed;
+import com.solvd.farm.domain.Item;
 import com.solvd.farm.domain.enums.TypeFeed;
+import com.solvd.farm.domain.enums.TypeItem;
 import com.solvd.farm.exception.DaoException;
 import com.solvd.farm.persistence.FeedRepository;
 import com.solvd.farm.util.ConnectionPool;
@@ -31,18 +33,23 @@ public class FeedRepositoryImpl implements FeedRepository {
     private static final String UPDATE_SQL = """
             UPDATE feeds
             SET type = ?,
-                count = ?
+                count = ?,
                 farm_id = ?
             WHERE id=?
             """;
     private static final String FIND_ALL_SQL = """
-            SELECT type,
+            SELECT 
+                id,
+                type,
                 count,
                 farm_id
             FROM feeds
             """;
     private static final String FIND_BY_ID = FIND_ALL_SQL + """
             WHERE feeds.id=?
+            """;
+    private static final String FIND_BY_FARM_ID_AND_TYPE = FIND_ALL_SQL + """
+            WHERE farm_id = ? AND type = ? 
             """;
 
     private FeedRepositoryImpl() {
@@ -136,6 +143,24 @@ public class FeedRepositoryImpl implements FeedRepository {
                 result.add(buildFeed(resultSet));
             }
             return result;
+        } catch (SQLException e) {
+            log.error(e.getMessage());
+            throw new DaoException(e);
+        }
+    }
+
+    @Override
+    public Optional<Feed> findByFarmIdAndType(Long id, TypeFeed type) {
+        try (var connection = ConnectionPool.get();
+             var preparedStatement = connection.prepareStatement(FIND_BY_FARM_ID_AND_TYPE)) {
+            preparedStatement.setLong(1, id);
+            preparedStatement.setString(2, type.name());
+            var resultSet = preparedStatement.executeQuery();
+            Feed feed = null;
+            if (resultSet.next()) {
+                feed = buildFeed(resultSet);
+            }
+            return Optional.ofNullable(feed);
         } catch (SQLException e) {
             log.error(e.getMessage());
             throw new DaoException(e);

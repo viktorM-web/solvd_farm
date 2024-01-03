@@ -30,6 +30,21 @@
         where animals.id=#{id}
     </select>
 
+    <select id="findAllBy" resultMap="AnimalResultMap">
+        <include refid="animalSelect"/>
+        where farms.id=#{farmId}
+    </select>
+
+    <select id="findBy" resultMap="AnimalResultMap">
+        <include refid="animalSelect"/>
+        where animals.id=#{id} and farms.id=#{farmId}
+    </select>
+
+    <select id="findByFarmIdAndType" resultMap="AnimalResultMap">
+        <include refid="animalSelect"/>
+        where farms.id=#{farmId} and animals.type like #{type}
+    </select>
+
     <select id="findAll" resultMap="AnimalResultMap">
         <include refid="animalSelect"/>
     </select>

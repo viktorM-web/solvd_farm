@@ -20,6 +20,11 @@
         <include refid="userSelect"/>
     </select>
 
+    <select id="findBy" resultMap="UserResultMap">
+        <include refid="userSelect"/>
+        where login=#{login} and password=#{password}
+    </select>
+
     <update id="update">
         Update users set login = #{login}, password = #{password}, role = #{role} WHERE id=#{id}
     </update>

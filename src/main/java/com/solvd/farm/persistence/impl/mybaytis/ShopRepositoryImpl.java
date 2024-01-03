@@ -10,6 +10,12 @@ import java.util.Optional;
 
 public class ShopRepositoryImpl implements ShopRepository {
 
+    private static final ShopRepositoryImpl INSTANCE = new ShopRepositoryImpl();
+
+    public static ShopRepositoryImpl getInstance() {
+        return INSTANCE;
+    }
+
     @Override
     public boolean delete(Long id) {
         try (SqlSession session = MyBatisSessionFactory.getSession()) {

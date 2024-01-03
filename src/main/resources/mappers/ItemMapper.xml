@@ -33,6 +33,11 @@
         <include refid="itemSelect"/>
     </select>
 
+    <select id="findByFarmIdAndType" resultMap="ItemResultMap">
+        <include refid="itemSelect"/>
+        where farms.id = #{id} and items.type=#{type}
+    </select>
+
     <update id="update">
         Update items set type = #{type}, count = #{count}, farm_id = #{farm.id} WHERE id=#{id}
     </update>

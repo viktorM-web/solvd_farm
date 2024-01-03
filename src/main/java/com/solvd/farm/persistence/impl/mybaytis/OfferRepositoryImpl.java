@@ -10,6 +10,12 @@ import java.util.Optional;
 
 public class OfferRepositoryImpl implements OfferRepository {
 
+    private static final OfferRepositoryImpl INSTANCE = new OfferRepositoryImpl();
+
+    public static OfferRepository getInstance() {
+        return INSTANCE;
+    }
+
     @Override
     public boolean delete(Long id) {
         try (SqlSession session = MyBatisSessionFactory.getSession()) {
@@ -47,6 +53,38 @@ public class OfferRepositoryImpl implements OfferRepository {
         try (SqlSession session = MyBatisSessionFactory.getSession()) {
             OfferRepository mapper = session.getMapper(OfferRepository.class);
             return mapper.findAll();
+        }
+    }
+
+    @Override
+    public List<Offer> findAllSellingFeed() {
+        try (SqlSession session = MyBatisSessionFactory.getSession()) {
+            OfferRepository mapper = session.getMapper(OfferRepository.class);
+            return mapper.findAllSellingFeed();
+        }
+    }
+
+    @Override
+    public List<Offer> findAllBuyingItem() {
+        try (SqlSession session = MyBatisSessionFactory.getSession()) {
+            OfferRepository mapper = session.getMapper(OfferRepository.class);
+            return mapper.findAllBuyingItem();
+        }
+    }
+
+    @Override
+    public List<Offer> findAllBuyingAnimal() {
+        try (SqlSession session = MyBatisSessionFactory.getSession()) {
+            OfferRepository mapper = session.getMapper(OfferRepository.class);
+            return mapper.findAllBuyingAnimal();
+        }
+    }
+
+    @Override
+    public List<Offer> findAllSellingAnimal() {
+        try (SqlSession session = MyBatisSessionFactory.getSession()) {
+            OfferRepository mapper = session.getMapper(OfferRepository.class);
+            return mapper.findAllSellingAnimal();
         }
     }
 }

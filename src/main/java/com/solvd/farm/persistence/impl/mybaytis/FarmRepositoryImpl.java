@@ -10,6 +10,12 @@ import java.util.Optional;
 
 public class FarmRepositoryImpl implements FarmRepository {
 
+    private static final FarmRepositoryImpl INSTANCE = new FarmRepositoryImpl();
+
+    public static FarmRepositoryImpl getInstance() {
+        return INSTANCE;
+    }
+
     @Override
     public boolean delete(Long id) {
         try (SqlSession session = MyBatisSessionFactory.getSession()) {

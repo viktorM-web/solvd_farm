@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.solvd.farm.persistence.AnimalRepository">
+
+    <insert id="save" keyColumn="id" keyProperty="id" useGeneratedKeys="true">
+        Insert into animals (type, age, weight, farm_id) values (#{type}, #{age}, #{weight}, #{farm.id})
+    </insert>
+
+    <sql id="animalSelect">
+        Select
+        animals.id id,
+        animals.type type,
+        animals.age age,
+        animals.weight weight,
+        farms.id farms_id,
+        farms.name farms_name,
+        farms.budget farms_budget,
+        users.id users_id,
+        users.login users_login,
+        users.password users_password,
+        users.role users_role
+        from animals
+        left join farms on farms.id=animals.farm_id
+        left join users on users.id=farms.user_id
+    </sql>
+
+    <select id="findById" resultMap="AnimalResultMap">
+        <include refid="animalSelect"/>
+        where animals.id=#{id}
+    </select>
+
+    <select id="findAllBy" resultMap="AnimalResultMap">
+        <include refid="animalSelect"/>
+        where farms.id=#{farmId}
+    </select>
+
+    <select id="findBy" resultMap="AnimalResultMap">
+        <include refid="animalSelect"/>
+        where animals.id=#{id} and farms.id=#{farmId}
+    </select>
+
+    <select id="findByFarmIdAndType" resultMap="AnimalResultMap">
+        <include refid="animalSelect"/>
+        where farms.id=#{farmId} and animals.type like #{type}
+    </select>
+
+    <select id="findAll" resultMap="AnimalResultMap">
+        <include refid="animalSelect"/>
+    </select>
+
+    <update id="update">
+        Update animals set type = #{type}, age = #{age}, weight = #{weight}, farm_id = #{farm.id} WHERE id=#{id}
+    </update>
+
+    <delete id="delete">
+        Delete from animals where id=#{id}
+    </delete>
+
+    <resultMap id="AnimalResultMap" type="com.solvd.farm.domain.Animal" autoMapping="false">
+        <id column="id" property="id"/>
+        <result column="type" property="type"/>
+        <result column="age" property="age"/>
+        <result column="weight" property="weight"/>
+        <association property="farm" columnPrefix="FARMS_" javaType="com.solvd.farm.domain.Farm"
+                     resultMap="FarmResultMap"/>
+    </resultMap>
+    <resultMap id="FarmResultMap" type="com.solvd.farm.domain.Farm" autoMapping="false">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="budget" property="budget"/>
+        <association property="user" columnPrefix="USERS_" javaType="com.solvd.farm.domain.User"
+                     resultMap="UserResultMap"/>
+    </resultMap>
+    <resultMap id="UserResultMap" type="com.solvd.farm.domain.User" autoMapping="false">
+        <id column="id" property="id"/>
+        <result column="login" property="login"/>
+        <result column="password" property="password"/>
+        <result column="role" property="role"/>
+    </resultMap>
+</mapper>

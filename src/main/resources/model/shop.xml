@@ -1,0 +1,9 @@
+<shop xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="shop.xsd">
+    <name>shop2</name>
+    <user id="1">
+        <login>Saler2</login>
+        <password>2222</password>
+        <role>SALESMAN</role>
+    </user>
+</shop>

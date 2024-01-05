@@ -16,7 +16,7 @@ public class StopAppMenu implements IMenu {
 
     @Override
     public void execute() {
-        log.info("you want really want to stop app? \n[Y]\n[N]");
+        log.info("you really want to stop app? \n[Y]\n[N]");
         boolean getAnswer = false;
         while (!getAnswer) {
             String requestForMenu = session.getRequestForMenu();

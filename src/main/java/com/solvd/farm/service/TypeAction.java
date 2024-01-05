@@ -1,8 +1,13 @@
 package com.solvd.farm.service;
 
 import com.solvd.farm.service.menu.*;
+import com.solvd.farm.service.menu.admin.CreatingUserMenu;
 import com.solvd.farm.service.menu.admin.StopAppMenu;
 import com.solvd.farm.service.menu.farmer.*;
+import com.solvd.farm.service.menu.salesman.CreatingOfferMenu;
+import com.solvd.farm.service.menu.salesman.DeletingOfferMenu;
+import com.solvd.farm.service.menu.salesman.ShowingOfferMenu;
+import com.solvd.farm.service.menu.salesman.UpdatingOfferMenu;
 
 public enum TypeAction {
 

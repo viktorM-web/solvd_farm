@@ -13,4 +13,6 @@ public interface OfferRepository extends Dao<Long, Offer> {
     List<Offer> findAllBuyingAnimal();
 
     List<Offer> findAllSellingAnimal();
+
+    List<Offer> findAllByShop(Long id);
 }

@@ -87,4 +87,12 @@ public class OfferRepositoryImpl implements OfferRepository {
             return mapper.findAllSellingAnimal();
         }
     }
+
+    @Override
+    public List<Offer> findAllByShop(Long shopId) {
+        try (SqlSession session = MyBatisSessionFactory.getSession()) {
+            OfferRepository mapper = session.getMapper(OfferRepository.class);
+            return mapper.findAllByShop(shopId);
+        }
+    }
 }

@@ -7,6 +7,7 @@ import com.solvd.farm.persistence.OfferRepository;
 import com.solvd.farm.util.ConnectionPool;
 import lombok.extern.slf4j.Slf4j;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -47,6 +48,9 @@ public class OfferRepositoryImpl implements OfferRepository {
             """;
     private static final String FIND_BY_ID = FIND_ALL_SQL + """
             WHERE offers.id=?
+            """;
+    private static final String FIND_BY_SHOP_ID = FIND_ALL_SQL + """
+            WHERE offers.shop_id=?
             """;
     private static final String FIND_SELLING_FEED = FIND_ALL_SQL + """
             WHERE type like 'SELL' and description like '%FOR_%'
@@ -211,6 +215,31 @@ public class OfferRepositoryImpl implements OfferRepository {
     public List<Offer> findAllSellingAnimal() {
         try (var connection = ConnectionPool.get();
              var preparedStatement = connection.prepareStatement(FIND_SELLING_ANIMAL)) {
+            var resultSet = preparedStatement.executeQuery();
+            List<Offer> result = new ArrayList<>();
+            while (resultSet.next()) {
+                result.add(buildOffer(resultSet));
+            }
+            return result;
+        } catch (SQLException e) {
+            log.error(e.getMessage());
+            throw new DaoException(e);
+        }
+    }
+
+    @Override
+    public List<Offer> findAllByShop(Long shopId) {
+        try (var connection = ConnectionPool.get()) {
+            return findAllByShop(connection, shopId);
+        } catch (SQLException e) {
+            log.error(e.getMessage());
+            throw new DaoException(e);
+        }
+    }
+
+    public List<Offer> findAllByShop(Connection connection, Long shopId) {
+        try (var preparedStatement = connection.prepareStatement(FIND_BY_SHOP_ID)) {
+            preparedStatement.setLong(1, shopId);
             var resultSet = preparedStatement.executeQuery();
             List<Offer> result = new ArrayList<>();
             while (resultSet.next()) {

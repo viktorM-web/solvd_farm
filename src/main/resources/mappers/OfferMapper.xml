@@ -29,6 +29,11 @@
         where offers.id=#{id}
     </select>
 
+    <select id="findAllByShop" resultMap="OfferResultMap">
+        <include refid="offerSelect"/>
+        where shops.id=#{shopId}
+    </select>
+
     <select id="findAllSellingFeed" resultMap="OfferResultMap">
         <include refid="offerSelect"/>
         where type like 'SELL' and description like '%FOR_%'

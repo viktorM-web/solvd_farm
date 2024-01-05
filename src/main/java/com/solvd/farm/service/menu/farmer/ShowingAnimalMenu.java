@@ -44,19 +44,15 @@ public class ShowingAnimalMenu implements IMenu {
             Optional<Farm> maybeFarm = session.getImpl().getFarmRepository().findById(Long.valueOf(requestForMenu));
             if (maybeFarm.isEmpty()) {
                 log.info("farm not found \ntry again");
-                continue;
             } else {
                 farm = maybeFarm.get();
-            }
-            showAllAnimal(farm);
-            log.info("If you want select other farm press [enter] \nor [0] if you want back to user menu");
-            requestForMenu = session.getRequestForMenu();
-            if (requestForMenu.equals("0")) {
-                break;
-            } else {
-                farm = null;
+                showAllAnimal(farm);
+                log.info("If you want select other farm press [enter] \nor [0] if you want back to user menu");
+                requestForMenu = session.getRequestForMenu();
+                if (!requestForMenu.equals("0")) {
+                    farm = null;
+                }
             }
         }
-
     }
 }

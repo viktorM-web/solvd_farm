@@ -1,6 +1,5 @@
 <offer xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:noNamespaceSchemaLocation="offer.xsd">
-
     <type>SELL</type>
     <description>ANIMAL_COW</description>
     <price>99.99</price>

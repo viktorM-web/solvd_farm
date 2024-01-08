@@ -2,6 +2,28 @@
 
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
+    <xs:complexType name="offer">
+        <xs:sequence>
+            <xs:element name="type">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="SELL"/>
+                        <xs:enumeration value="BUY"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="description" type="xs:string"/>
+            <xs:element name="price" type="xs:double"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string" use="optional"/>
+    </xs:complexType>
+
+    <xs:complexType name="offers">
+        <xs:sequence>
+            <xs:element name="offer" type="offer" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
     <xs:complexType name="user">
         <xs:sequence>
             <xs:element name="login" type="xs:string"/>
@@ -9,8 +31,6 @@
             <xs:element name="role">
                 <xs:simpleType>
                     <xs:restriction base="xs:string">
-                        <xs:enumeration value="ADMIN"/>
-                        <xs:enumeration value="FARMER"/>
                         <xs:enumeration value="SALESMAN"/>
                     </xs:restriction>
                 </xs:simpleType>
@@ -23,7 +43,9 @@
         <xs:sequence>
             <xs:element name="name" type="xs:string"/>
             <xs:element name="user" type="user"/>
+            <xs:element name="offers" type="offers"/>
         </xs:sequence>
+        <xs:attribute name="id" type="xs:long" use="optional"/>
     </xs:complexType>
 
     <xs:element name="shop" type="shopType"/>

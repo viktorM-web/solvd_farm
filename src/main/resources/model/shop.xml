@@ -6,4 +6,21 @@
         <password>2222</password>
         <role>SALESMAN</role>
     </user>
+    <offers>
+        <offer>
+            <type>SELL</type>
+            <description>ANIMAL_COW</description>
+            <price>99.99</price>
+        </offer>
+        <offer>
+            <type>SELL</type>
+            <description>ANIMAL_CHICKEN</description>
+            <price>1111.99</price>
+        </offer>
+        <offer>
+            <type>SELL</type>
+            <description>ANIMAL_PIG</description>
+            <price>99.99</price>
+        </offer>
+    </offers>
 </shop>

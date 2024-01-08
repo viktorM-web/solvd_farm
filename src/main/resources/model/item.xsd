@@ -19,30 +19,31 @@
         <xs:attribute name="id" type="xs:long" use="optional"/>
     </xs:complexType>
 
-    <xs:complexType name="shopType">
+    <xs:complexType name="farmType">
         <xs:sequence>
             <xs:element name="name" type="xs:string"/>
+            <xs:element name="budget" type="xs:double"/>
             <xs:element name="user" type="user"/>
         </xs:sequence>
         <xs:attribute name="id" type="xs:long" use="optional"/>
     </xs:complexType>
 
-    <xs:complexType name="offerType">
+    <xs:complexType name="itemType">
         <xs:sequence>
             <xs:element name="type">
                 <xs:simpleType>
                     <xs:restriction base="xs:string">
-                        <xs:enumeration value="SELL"/>
-                        <xs:enumeration value="BUY"/>
+                        <xs:enumeration value="EGG"/>
+                        <xs:enumeration value="MILK"/>
+                        <xs:enumeration value="MEAT"/>
                     </xs:restriction>
                 </xs:simpleType>
             </xs:element>
-            <xs:element name="description" type="xs:string"/>
-            <xs:element name="price" type="xs:double"/>
-            <xs:element name="shop" type="shopType"/>
+            <xs:element name="count" type="xs:double"/>
+            <xs:element name="farm" type="farmType"/>
         </xs:sequence>
         <xs:attribute name="id" type="xs:long" use="optional"/>
     </xs:complexType>
 
-    <xs:element name="offer" type="offerType"/>
+    <xs:element name="item" type="itemType"/>
 </xs:schema>

@@ -24,7 +24,6 @@ public class Validator {
                 if(complexPattern.equals(request)){
                     return true;
                 }
-
             }
         }
         for (TypeItem item :TypeItem.values()) {

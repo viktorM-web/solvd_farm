@@ -14,9 +14,14 @@
         users.id users_id,
         users.login users_login,
         users.password users_password,
-        users.role users_role
+        users.role users_role,
+        offers.id offers_id,
+        offers.type offers_type,
+        offers.description offers_description,
+        offers.price offers_price
         from shops
-        join users on users.id=shops.user_id
+        join users on shops.user_id=users.id
+        join offers on offers.shop_id=shops.id
     </sql>
 
     <select id="findById" resultMap="ShopResultMap">
@@ -41,7 +46,9 @@
         <result column="name" property="name"/>
         <association property="user" columnPrefix="USERS_" javaType="com.solvd.farm.domain.User"
                      resultMap="UserResultMap"/>
+        <collection property="offers" columnPrefix="OFFERS_" resultMap="com.solvd.farm.persistence.OfferRepository.OfferResultMap"/>
     </resultMap>
+
     <resultMap id="UserResultMap" type="com.solvd.farm.domain.User" autoMapping="false">
         <id column="id" property="id"/>
         <result column="login" property="login"/>

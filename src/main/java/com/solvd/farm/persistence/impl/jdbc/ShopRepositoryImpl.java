@@ -1,5 +1,6 @@
 package com.solvd.farm.persistence.impl.jdbc;
 
+import com.solvd.farm.domain.Offer;
 import com.solvd.farm.domain.Shop;
 import com.solvd.farm.exception.DaoException;
 import com.solvd.farm.persistence.ShopRepository;
@@ -19,6 +20,7 @@ public class ShopRepositoryImpl implements ShopRepository {
 
     private static final ShopRepositoryImpl INSTANCE = new ShopRepositoryImpl();
     private static final UserRepositoryImpl USER_REPOSITORY = UserRepositoryImpl.getInstance();
+    private static final OfferRepositoryImpl OFFER_REPOSITORY = OfferRepositoryImpl.getInstance();
 
     private static final String DELETE_SQL = """
             DELETE FROM shops
@@ -61,7 +63,7 @@ public class ShopRepositoryImpl implements ShopRepository {
 
         } catch (SQLException e) {
             log.error(e.getMessage());
-            throw new DaoException(e);
+            return false;
         }
     }
 
@@ -86,7 +88,7 @@ public class ShopRepositoryImpl implements ShopRepository {
             return shop;
         } catch (SQLException e) {
             log.error(e.getMessage());
-            throw new DaoException(e);
+            return shop;
         }
     }
 
@@ -102,17 +104,23 @@ public class ShopRepositoryImpl implements ShopRepository {
 
         } catch (SQLException e) {
             log.error(e.getMessage());
-            throw new DaoException(e);
         }
     }
 
     @Override
     public Optional<Shop> findById(Long id) {
-        try (var connection = ConnectionPool.get()) {
-            return findById(id, connection);
+        try (var connection = ConnectionPool.get();
+             var preparedStatement = connection.prepareStatement(FIND_BY_ID)) {
+            preparedStatement.setLong(1, id);
+            var resultSet = preparedStatement.executeQuery();
+            Shop shop = null;
+            if (resultSet.next()) {
+                shop = buildEagerShop(resultSet);
+            }
+            return Optional.ofNullable(shop);
         } catch (SQLException e) {
             log.error(e.getMessage());
-            throw new DaoException(e);
+            return Optional.empty();
         }
     }
 
@@ -122,12 +130,12 @@ public class ShopRepositoryImpl implements ShopRepository {
             var resultSet = preparedStatement.executeQuery();
             Shop shop = null;
             if (resultSet.next()) {
-                shop = buildShop(resultSet);
+                shop = buildLazyShop(resultSet);
             }
             return Optional.ofNullable(shop);
         } catch (SQLException e) {
             log.error(e.getMessage());
-            throw new DaoException(e);
+            return Optional.empty();
         }
     }
 
@@ -138,23 +146,39 @@ public class ShopRepositoryImpl implements ShopRepository {
             var resultSet = preparedStatement.executeQuery();
             List<Shop> result = new ArrayList<>();
             while (resultSet.next()) {
-                result.add(buildShop(resultSet));
+                result.add(buildEagerShop(resultSet));
             }
             return result;
         } catch (SQLException e) {
             log.error(e.getMessage());
-            throw new DaoException(e);
+            return List.of();
         }
     }
 
-    private static Shop buildShop(ResultSet resultSet) throws SQLException {
+    private static Shop buildLazyShop(ResultSet resultSet) throws SQLException {
         return new Shop(
                 resultSet.getLong("id"),
                 resultSet.getString("name"),
                 USER_REPOSITORY.findById(
                         resultSet.getLong("user_id"),
                         resultSet.getStatement().getConnection()
-                ).orElse(null)
+                ).orElse(null),
+                null
+        );
+    }
+
+    private static Shop buildEagerShop(ResultSet resultSet) throws SQLException {
+        return new Shop(
+                resultSet.getLong("id"),
+                resultSet.getString("name"),
+                USER_REPOSITORY.findById(
+                        resultSet.getLong("user_id"),
+                        resultSet.getStatement().getConnection()
+                ).orElse(null),
+                OFFER_REPOSITORY.findAllByShop(
+                        resultSet.getStatement().getConnection(),
+                        resultSet.getLong("id")
+                )
         );
     }
 }

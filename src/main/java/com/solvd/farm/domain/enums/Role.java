@@ -8,8 +8,7 @@ import java.util.Map;
 @Slf4j
 public enum Role {
 
-    ADMIN(Map.of(1, "create user", 2, "create shop", 3, "create farm", 4, "create animal",
-            5, "create feed", 6,"create item",7,"stop app")),
+    ADMIN(Map.of(1, "create user", 2, "create shop", 3, "stop app")),
 
     SALESMAN(Map.of(1, "create offer", 2, "update offer", 3, "delete offer", 4, "show all offer",
             5, "get all shops")),
@@ -21,12 +20,12 @@ public enum Role {
     Map<Integer, String> actions;
 
     Role(Map<Integer, String> map) {
-        actions=map;
+        actions = map;
     }
 
-    public void displayMenu(){
-        for (Map.Entry<Integer, String> entry:actions.entrySet()) {
-            log.info(entry.getValue()+"[" + entry.getKey() + "]");
+    public void displayMenu() {
+        for (Map.Entry<Integer, String> entry : actions.entrySet()) {
+            log.info(entry.getValue() + "[" + entry.getKey() + "]");
         }
     }
 }

@@ -1,6 +1,6 @@
 package com.solvd.farm.service.menu.admin;
 
-import com.solvd.farm.domain.User;
+import com.solvd.farm.domain.Shop;
 import com.solvd.farm.service.Session;
 import com.solvd.farm.service.menu.IMenu;
 import com.solvd.farm.util.DocumentReader;
@@ -11,8 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Optional;
 
 @Slf4j
-public class CreatingUserMenu implements IMenu {
-
+public class CreatingShopMenu implements IMenu {
     @Setter
     private Session session;
 
@@ -20,7 +19,7 @@ public class CreatingUserMenu implements IMenu {
     public void execute() {
         boolean exit = false;
         while (!exit) {
-            log.info("you want to create user \n by xml press [1]\n by xml(JAXB) press[2] \n if you want exit [0]");
+            log.info("you want to create shop \n by xml press [1]\n by xml(JAXB) press[2] \n if you want exit [0]");
             String requestForMenu = session.getRequestForMenu();
             switch (requestForMenu) {
                 case "0" -> {
@@ -28,42 +27,42 @@ public class CreatingUserMenu implements IMenu {
                     log.info("back to user menu");
                 }
                 case "2" -> {
-                    User user = new User();
-                    boolean fileRead = false;
-                    while (!fileRead) {
+                    Shop shop = new Shop();
+                    boolean fileRed = false;
+                    while (!fileRed) {
                         log.info("enter name xml file");
                         requestForMenu = session.getRequestForMenu();
-                        Optional<Object> maybeUser = JAXBParser.getObject(requestForMenu, user);
+                        Optional<Object> maybeUser = JAXBParser.getObject(requestForMenu, shop);
                         if (maybeUser.isPresent()) {
-                            user = (User) maybeUser.get();
-                            fileRead = true;
+                            shop = (Shop) maybeUser.get();
+                            fileRed = true;
                         }
                     }
-                    session.getImpl().getUserRepository().save(user);
+                    session.getImpl().getShopRepository().save(shop);
 
-                    if (user.getId() != null) {
-                        log.info(user + "was created");
+                    if (shop.getId() != null) {
+                        log.info(shop + "was created");
                     } else {
                         log.info("failed to create ");
                     }
                     exit = true;
                 }
                 case "1" -> {
-                    User user = new User();
+                    Shop shop = new Shop();
                     boolean fileRed = false;
                     while (!fileRed) {
                         log.info("enter name xml file");
                         requestForMenu = session.getRequestForMenu();
-                        Optional<Object> maybeUser = DocumentReader.getDocument(requestForMenu, user);
+                        Optional<Object> maybeUser = DocumentReader.getDocument(requestForMenu, shop);
                         if (maybeUser.isPresent()) {
-                            user = (User) maybeUser.get();
+                            shop = (Shop) maybeUser.get();
                             fileRed = true;
                         }
                     }
-                    session.getImpl().getUserRepository().save(user);
+                    session.getImpl().getShopRepository().save(shop);
 
-                    if (user.getId() != null) {
-                        log.info(user + "was created");
+                    if (shop.getId() != null) {
+                        log.info(shop + "was created");
                     } else {
                         log.info("failed to create ");
                     }

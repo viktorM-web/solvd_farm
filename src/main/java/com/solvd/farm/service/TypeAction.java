@@ -1,6 +1,7 @@
 package com.solvd.farm.service;
 
 import com.solvd.farm.service.menu.*;
+import com.solvd.farm.service.menu.admin.CreatingShopMenu;
 import com.solvd.farm.service.menu.admin.CreatingUserMenu;
 import com.solvd.farm.service.menu.admin.StopAppMenu;
 import com.solvd.farm.service.menu.farmer.*;
@@ -24,10 +25,6 @@ public enum TypeAction {
     SHOW_ALL_OFFER("show all offer", new ShowingOfferMenu()),
     CREATE_USER("create user", new CreatingUserMenu()),
     CREATE_SHOP("create shop", new CreatingShopMenu()),
-    CREATE_FARM("create farm", new CreatingFarmMenu()),
-    CREATE_ANIMAL("create animal", new CreatingAnimalMenu()),
-    CREATE_FEED("create animal", new CreatingFeedMenu()),
-    CREATE_ITEM("create item", new CreatingItemMenu()),
     STOP_APP("stop app", new StopAppMenu());
 
     String name;

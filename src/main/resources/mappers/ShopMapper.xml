@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.solvd.farm.persistence.ShopRepository">
+
+    <insert id="save" keyColumn="id" keyProperty="id" useGeneratedKeys="true">
+        Insert into shops (name, user_id) values (#{name}, #{user.id})
+    </insert>
+
+    <sql id="shopSelect">
+        Select
+        shops.id id,
+        shops.name name,
+        users.id users_id,
+        users.login users_login,
+        users.password users_password,
+        users.role users_role,
+        offers.id offers_id,
+        offers.type offers_type,
+        offers.description offers_description,
+        offers.price offers_price
+        from shops
+        join users on shops.user_id=users.id
+        join offers on offers.shop_id=shops.id
+    </sql>
+
+    <select id="findById" resultMap="ShopResultMap">
+        <include refid="shopSelect"/>
+        where shops.id=#{id}
+    </select>
+
+    <select id="findAll" resultMap="ShopResultMap">
+        <include refid="shopSelect"/>
+    </select>
+
+    <update id="update">
+        Update shops set name = #{name}, user_id = #{user.id} WHERE id=#{id}
+    </update>
+
+    <delete id="delete">
+        Delete from shops where id=#{id}
+    </delete>
+
+    <resultMap id="ShopResultMap" type="com.solvd.farm.domain.Shop" autoMapping="false">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <association property="user" columnPrefix="USERS_" javaType="com.solvd.farm.domain.User"
+                     resultMap="UserResultMap"/>
+        <collection property="offers" columnPrefix="OFFERS_" resultMap="com.solvd.farm.persistence.OfferRepository.OfferResultMap"/>
+    </resultMap>
+
+    <resultMap id="UserResultMap" type="com.solvd.farm.domain.User" autoMapping="false">
+        <id column="id" property="id"/>
+        <result column="login" property="login"/>
+        <result column="password" property="password"/>
+        <result column="role" property="role"/>
+    </resultMap>
+</mapper>

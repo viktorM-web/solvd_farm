@@ -1,0 +1,16 @@
+{
+  "id": 99,
+  "type": "MEAT",
+  "count": 99.99,
+  "farm": {
+    "id":1,
+    "name": "sunrise",
+    "budget": 2500.4,
+    "user": {
+      "id": 3,
+      "log": "farmer1",
+      "password": "1111",
+      "role": "FARMER"
+    }
+  }
+}

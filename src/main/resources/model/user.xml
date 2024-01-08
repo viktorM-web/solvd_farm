@@ -1,0 +1,6 @@
+<user xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:noNamespaceSchemaLocation="user.xsd">
+    <login>Saler2</login>
+    <password>2222</password>
+    <role>SALESMAN</role>
+</user>

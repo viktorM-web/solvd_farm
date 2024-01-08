@@ -5,6 +5,7 @@ import com.solvd.farm.service.Session;
 import com.solvd.farm.service.menu.IMenu;
 import com.solvd.farm.util.DocumentReader;
 import com.solvd.farm.util.JAXBParser;
+import com.solvd.farm.util.JSONParser;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,7 +20,11 @@ public class CreatingShopMenu implements IMenu {
     public void execute() {
         boolean exit = false;
         while (!exit) {
-            log.info("you want to create shop \n by xml press [1]\n by xml(JAXB) press[2] \n if you want exit [0]");
+            log.info("you want to create shop " +
+                     "\n by xml press [1]" +
+                     "\n by xml(JAXB) press[2] " +
+                     "\n by json press[3] " +
+                     "\n if you want exit [0]");
             String requestForMenu = session.getRequestForMenu();
             switch (requestForMenu) {
                 case "0" -> {
@@ -33,6 +38,27 @@ public class CreatingShopMenu implements IMenu {
                         log.info("enter name xml file");
                         requestForMenu = session.getRequestForMenu();
                         Optional<Object> maybeUser = JAXBParser.getObject(requestForMenu, shop);
+                        if (maybeUser.isPresent()) {
+                            shop = (Shop) maybeUser.get();
+                            fileRed = true;
+                        }
+                    }
+                    session.getImpl().getShopRepository().save(shop);
+
+                    if (shop.getId() != null) {
+                        log.info(shop + "was created");
+                    } else {
+                        log.info("failed to create ");
+                    }
+                    exit = true;
+                }
+                case "3" -> {
+                    Shop shop = new Shop();
+                    boolean fileRed = false;
+                    while (!fileRed) {
+                        log.info("enter name json file");
+                        requestForMenu = session.getRequestForMenu();
+                        Optional<Object> maybeUser = JSONParser.getObject(requestForMenu, shop);
                         if (maybeUser.isPresent()) {
                             shop = (Shop) maybeUser.get();
                             fileRed = true;

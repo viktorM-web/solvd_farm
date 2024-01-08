@@ -7,6 +7,7 @@ import com.solvd.farm.service.Session;
 import com.solvd.farm.service.menu.IMenu;
 import com.solvd.farm.util.DocumentReader;
 import com.solvd.farm.util.JAXBParser;
+import com.solvd.farm.util.JSONParser;
 import com.solvd.farm.util.Validator;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +35,11 @@ public class CreatingOfferMenu implements IMenu {
     public void execute() {
         boolean exit = false;
         while (!exit){
-            log.info("how you want create offer \n by xml press [1]\n by hand press[2] \nby xml(JAXB) press [3] \n if you want exit [0]");
+            log.info("how you want create offer \n by xml press [1]" +
+                     "\n by hand press[2] " +
+                     "\nby xml(JAXB) press [3] " +
+                     "\nby json press [4] " +
+                     "\n if you want exit [0]");
             String requestForMenu = session.getRequestForMenu();
             switch (requestForMenu) {
                 case "0" -> {
@@ -153,6 +158,27 @@ public class CreatingOfferMenu implements IMenu {
                         log.info("enter name xml file");
                         requestForMenu = session.getRequestForMenu();
                         Optional<Object> maybeUser = JAXBParser.getObject(requestForMenu, offer);
+                        if (maybeUser.isPresent()) {
+                            offer = (Offer) maybeUser.get();
+                            fileRed = true;
+                        }
+                    }
+                    session.getImpl().getOfferRepository().save(offer);
+
+                    if (offer.getId() != null) {
+                        log.info(offer + "was created");
+                    } else {
+                        log.info("failed to create ");
+                    }
+                    exit = true;
+                }
+                case "4" -> {
+                    Offer offer = new Offer();
+                    boolean fileRed = false;
+                    while (!fileRed) {
+                        log.info("enter name json file");
+                        requestForMenu = session.getRequestForMenu();
+                        Optional<Object> maybeUser = JSONParser.getObject(requestForMenu, offer);
                         if (maybeUser.isPresent()) {
                             offer = (Offer) maybeUser.get();
                             fileRed = true;

@@ -1,5 +1,6 @@
 package com.solvd.farm.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.solvd.farm.domain.enums.Role;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -18,6 +19,7 @@ public class User {
 
     @XmlAttribute(name = "id")
     private Long id;
+    @JsonProperty("log")
     private String login;
     private String password;
     private Role role;

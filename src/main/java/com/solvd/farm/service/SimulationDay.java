@@ -61,7 +61,6 @@ public class SimulationDay extends Thread {
 
                     switch (animal.getType()) {
                         case COW -> {
-
                             log.info("\ngot 3.5 milk");
                             Optional<Item> maybeItem = itemRepository.findByFarmIdAndType(animal.getFarm().getId(), TypeItem.MILK);
                             if (maybeItem.isPresent()) {

@@ -3,9 +3,7 @@ package com.solvd.farm.service.menu.admin;
 import com.solvd.farm.domain.User;
 import com.solvd.farm.service.Session;
 import com.solvd.farm.service.menu.IMenu;
-import com.solvd.farm.util.DocumentReader;
-import com.solvd.farm.util.JAXBParser;
-import com.solvd.farm.util.JSONParser;
+import com.solvd.farm.util.Parser;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -38,7 +36,7 @@ public class CreatingUserMenu implements IMenu {
                     while (!fileRead) {
                         log.info("enter name xml file");
                         requestForMenu = session.getRequestForMenu();
-                        Optional<Object> maybeUser = JAXBParser.getObject(requestForMenu, user);
+                        Optional<Object> maybeUser = Parser.JAXB.parseTo(requestForMenu, user);
                         if (maybeUser.isPresent()) {
                             user = (User) maybeUser.get();
                             fileRead = true;
@@ -59,7 +57,7 @@ public class CreatingUserMenu implements IMenu {
                     while (!fileRead) {
                         log.info("enter name json file");
                         requestForMenu = session.getRequestForMenu();
-                        Optional<Object> maybeUser = JSONParser.getObject(requestForMenu, user);
+                        Optional<Object> maybeUser = Parser.JSON.parseTo(requestForMenu, user);
                         if (maybeUser.isPresent()) {
                             user = (User) maybeUser.get();
                             fileRead = true;
@@ -80,7 +78,7 @@ public class CreatingUserMenu implements IMenu {
                     while (!fileRed) {
                         log.info("enter name xml file");
                         requestForMenu = session.getRequestForMenu();
-                        Optional<Object> maybeUser = DocumentReader.getDocument(requestForMenu, user);
+                        Optional<Object> maybeUser =Parser.DOM.parseTo(requestForMenu, user);
                         if (maybeUser.isPresent()) {
                             user = (User) maybeUser.get();
                             fileRed = true;

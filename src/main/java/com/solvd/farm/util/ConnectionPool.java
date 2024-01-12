@@ -38,7 +38,6 @@ public class ConnectionPool {
                             : method.invoke(connection, args));
             pool.add(proxyConnection);
             sourceConnections.add(connection);
-
         }
     }
 
@@ -46,7 +45,6 @@ public class ConnectionPool {
         if(pool==null){
             initConnectionPool();
         }
-
         try {
             return pool.take();
         } catch (InterruptedException e) {
@@ -74,7 +72,6 @@ public class ConnectionPool {
                 connection.close();
             } catch (SQLException e) {
                 log.error(e.getMessage());
-                throw new RuntimeException(e);
             }
         }
     }

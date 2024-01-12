@@ -3,9 +3,7 @@ package com.solvd.farm.service.menu.admin;
 import com.solvd.farm.domain.Shop;
 import com.solvd.farm.service.Session;
 import com.solvd.farm.service.menu.IMenu;
-import com.solvd.farm.util.DocumentReader;
-import com.solvd.farm.util.JAXBParser;
-import com.solvd.farm.util.JSONParser;
+import com.solvd.farm.util.Parser;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -37,7 +35,7 @@ public class CreatingShopMenu implements IMenu {
                     while (!fileRed) {
                         log.info("enter name xml file");
                         requestForMenu = session.getRequestForMenu();
-                        Optional<Object> maybeUser = JAXBParser.getObject(requestForMenu, shop);
+                        Optional<Object> maybeUser = Parser.JAXB.parseTo(requestForMenu, shop);
                         if (maybeUser.isPresent()) {
                             shop = (Shop) maybeUser.get();
                             fileRed = true;
@@ -58,7 +56,7 @@ public class CreatingShopMenu implements IMenu {
                     while (!fileRed) {
                         log.info("enter name json file");
                         requestForMenu = session.getRequestForMenu();
-                        Optional<Object> maybeUser = JSONParser.getObject(requestForMenu, shop);
+                        Optional<Object> maybeUser = Parser.JSON.parseTo(requestForMenu, shop);
                         if (maybeUser.isPresent()) {
                             shop = (Shop) maybeUser.get();
                             fileRed = true;
@@ -79,7 +77,7 @@ public class CreatingShopMenu implements IMenu {
                     while (!fileRed) {
                         log.info("enter name xml file");
                         requestForMenu = session.getRequestForMenu();
-                        Optional<Object> maybeUser = DocumentReader.getDocument(requestForMenu, shop);
+                        Optional<Object> maybeUser = Parser.DOM.parseTo(requestForMenu, shop);
                         if (maybeUser.isPresent()) {
                             shop = (Shop) maybeUser.get();
                             fileRed = true;

@@ -5,9 +5,7 @@ import com.solvd.farm.domain.Shop;
 import com.solvd.farm.domain.enums.TypeOffer;
 import com.solvd.farm.service.Session;
 import com.solvd.farm.service.menu.IMenu;
-import com.solvd.farm.util.DocumentReader;
-import com.solvd.farm.util.JAXBParser;
-import com.solvd.farm.util.JSONParser;
+import com.solvd.farm.util.Parser;
 import com.solvd.farm.util.Validator;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +24,7 @@ public class CreatingOfferMenu implements IMenu {
     private Map<Long, Shop> showAllShops() {
         List<Shop> allShops = session.getImpl().getShopRepository().findAll();
         return allShops.stream()
-                .filter(shop -> shop.getUser().getId() == session.getUser().getId())
+                .filter(shop -> shop.getUser().getId().equals(session.getUser().getId()))
                 .peek(shop -> log.info(shop.getName() + "[" + shop.getId() + "]"))
                 .collect(Collectors.toMap(Shop::getId, shop -> shop));
     }
@@ -34,7 +32,7 @@ public class CreatingOfferMenu implements IMenu {
     @Override
     public void execute() {
         boolean exit = false;
-        while (!exit){
+        while (!exit) {
             log.info("how you want create offer \n by xml press [1]" +
                      "\n by hand press[2] " +
                      "\nby xml(JAXB) press [3] " +
@@ -128,7 +126,7 @@ public class CreatingOfferMenu implements IMenu {
                             log.info(offer + "was created");
                         }
                     }
-                    exit=true;
+                    exit = true;
                 }
                 case "1" -> {
                     Offer offer = new Offer();
@@ -136,7 +134,7 @@ public class CreatingOfferMenu implements IMenu {
                     while (!fileRed) {
                         log.info("enter name xml file");
                         requestForMenu = session.getRequestForMenu();
-                        Optional<Object> maybeUser = DocumentReader.getDocument(requestForMenu, offer);
+                        Optional<Object> maybeUser = Parser.DOM.parseTo(requestForMenu, offer);
                         if (maybeUser.isPresent()) {
                             offer = (Offer) maybeUser.get();
                             fileRed = true;
@@ -157,7 +155,7 @@ public class CreatingOfferMenu implements IMenu {
                     while (!fileRed) {
                         log.info("enter name xml file");
                         requestForMenu = session.getRequestForMenu();
-                        Optional<Object> maybeUser = JAXBParser.getObject(requestForMenu, offer);
+                        Optional<Object> maybeUser = Parser.JAXB.parseTo(requestForMenu, offer);
                         if (maybeUser.isPresent()) {
                             offer = (Offer) maybeUser.get();
                             fileRed = true;
@@ -178,7 +176,7 @@ public class CreatingOfferMenu implements IMenu {
                     while (!fileRed) {
                         log.info("enter name json file");
                         requestForMenu = session.getRequestForMenu();
-                        Optional<Object> maybeUser = JSONParser.getObject(requestForMenu, offer);
+                        Optional<Object> maybeUser = Parser.JSON.parseTo(requestForMenu, offer);
                         if (maybeUser.isPresent()) {
                             offer = (Offer) maybeUser.get();
                             fileRed = true;

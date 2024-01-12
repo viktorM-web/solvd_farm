@@ -19,7 +19,7 @@ public class MyBatisSessionFactory {
     }
 
     private static void init() {
-        try(InputStream is = Resources.getResourceAsStream("mybatis-config.xml")) {
+        try (InputStream is = Resources.getResourceAsStream("mybatis-config.xml")) {
             sessionFactory = new SqlSessionFactoryBuilder()
                     .build(is);
         } catch (IOException exception) {

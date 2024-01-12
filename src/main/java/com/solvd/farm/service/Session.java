@@ -38,18 +38,29 @@ public class Session {
     }
 
     public Optional<IMenu> selectMenu() {
-        displayAvailableMenu();
-        log.info("for exit press [0]");
-        String select = scanner.nextLine();
+        while (true){
+            displayAvailableMenu();
+            log.info("for exit press [0]");
+            String select = scanner.nextLine();
+            if(select.matches("^[0-9]*$")){
 
-        if (select.equals("0")) {
-            return Optional.empty();
+                if (select.equals("0")) {
+                    return Optional.empty();
+                }
+
+                if(!user.getRole().getActions().containsKey(Integer.valueOf(select))){
+                    log.info("not correct data");
+                }
+
+                String nameAction = user.getRole().getActions().get(Integer.valueOf(select));
+                IMenu menu = TypeAction.getMenuBy(nameAction);
+                menu.setSession(this);
+                return Optional.of(menu);
+
+            }else{
+                log.info("not correct data");
+            }
         }
-
-        String nameAction = user.getRole().getActions().get(Integer.valueOf(select));
-        IMenu menu = TypeAction.getMenuBy(nameAction);
-        menu.setSession(this);
-        return Optional.of(menu);
     }
 
     public void displayAvailableMenu() {

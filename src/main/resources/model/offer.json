@@ -1,0 +1,16 @@
+{
+  "id": 99,
+  "type": "SELL",
+  "description": "ANIMAL_COW",
+  "price": 99.99,
+  "shop": {
+    "id":1,
+    "name": "shop1",
+    "user": {
+      "id": 2,
+      "log": "salesman",
+      "password": "1111",
+      "role": "SALESMAN"
+    }
+  }
+}

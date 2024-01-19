@@ -4,10 +4,13 @@ import com.solvd.farm.domain.Offer;
 import com.solvd.farm.domain.Shop;
 import com.solvd.farm.domain.enums.TypeOffer;
 import com.solvd.farm.service.Session;
+import com.solvd.farm.service.forAbstractFactory.IMenuMessage;
+import com.solvd.farm.service.forAbstractFactory.ISessionInfo;
+import com.solvd.farm.service.forAbstractFactory.SalesmanMenuMessage;
+import com.solvd.farm.service.forAbstractFactory.SalesmanSessionInfo;
 import com.solvd.farm.service.menu.IMenu;
 import com.solvd.farm.util.Parser;
 import com.solvd.farm.util.Validator;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -18,7 +21,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class CreatingOfferMenu implements IMenu {
 
-    @Setter
     private Session session;
 
     private Map<Long, Shop> showAllShops() {
@@ -30,7 +32,7 @@ public class CreatingOfferMenu implements IMenu {
     }
 
     @Override
-    public void execute() {
+    public IMenuMessage execute() {
         boolean exit = false;
         while (!exit) {
             log.info("how you want create offer \n by xml press [1]" +
@@ -194,5 +196,12 @@ public class CreatingOfferMenu implements IMenu {
                 default -> log.info("not correct data");
             }
         }
+        return new SalesmanMenuMessage("back to user menu");
+    }
+
+    @Override
+    public ISessionInfo setSession(Session session) {
+        this.session = session;
+        return new SalesmanSessionInfo(this.session);
     }
 }

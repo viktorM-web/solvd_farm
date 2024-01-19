@@ -3,8 +3,11 @@ package com.solvd.farm.service.menu.salesman;
 import com.solvd.farm.domain.Offer;
 import com.solvd.farm.domain.Shop;
 import com.solvd.farm.service.Session;
+import com.solvd.farm.service.forAbstractFactory.IMenuMessage;
+import com.solvd.farm.service.forAbstractFactory.ISessionInfo;
+import com.solvd.farm.service.forAbstractFactory.SalesmanMenuMessage;
+import com.solvd.farm.service.forAbstractFactory.SalesmanSessionInfo;
 import com.solvd.farm.service.menu.IMenu;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -14,7 +17,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ShowingOfferMenu implements IMenu {
 
-    @Setter
     private Session session;
 
     private Map<Long, Shop> showAllShops() {
@@ -33,7 +35,7 @@ public class ShowingOfferMenu implements IMenu {
     }
 
     @Override
-    public void execute() {
+    public IMenuMessage execute() {
         Shop shop = null;
         while (shop == null) {
             Map<Long, Shop> shops = showAllShops();
@@ -54,5 +56,12 @@ public class ShowingOfferMenu implements IMenu {
                 }
             }
         }
+        return new SalesmanMenuMessage("back to user menu");
+    }
+
+    @Override
+    public ISessionInfo setSession(Session session) {
+        this.session = session;
+        return new SalesmanSessionInfo(this.session);
     }
 }

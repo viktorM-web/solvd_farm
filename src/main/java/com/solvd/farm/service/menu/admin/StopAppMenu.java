@@ -2,8 +2,11 @@ package com.solvd.farm.service.menu.admin;
 
 import com.solvd.farm.service.Application;
 import com.solvd.farm.service.Session;
+import com.solvd.farm.service.forAbstractFactory.AdminMenuMessage;
+import com.solvd.farm.service.forAbstractFactory.AdminSessionInfo;
+import com.solvd.farm.service.forAbstractFactory.IMenuMessage;
+import com.solvd.farm.service.forAbstractFactory.ISessionInfo;
 import com.solvd.farm.service.menu.IMenu;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
@@ -11,11 +14,11 @@ import java.lang.reflect.Field;
 @Slf4j
 public class StopAppMenu implements IMenu {
 
-    @Setter
     private Session session;
 
     @Override
-    public void execute() {
+    public IMenuMessage execute() {
+        String message = null;
         log.info("you really want to stop app? \n[Y]\n[N]");
         boolean getAnswer = false;
         while (!getAnswer) {
@@ -30,14 +33,21 @@ public class StopAppMenu implements IMenu {
                         log.error(e.getMessage());
                     }
                     getAnswer = true;
-                    log.info("ADMIN STOPPED THE APP");
+                    message = "ADMIN STOPPED THE APP";
                 }
                 case "N" -> {
-                    log.info("back to user menu");
+                    message ="back to user menu";
                     getAnswer = true;
                 }
                 default -> log.info("not correct data");
             }
         }
+        return new AdminMenuMessage(message);
+    }
+
+    @Override
+    public ISessionInfo setSession(Session session) {
+        this.session = session;
+        return new AdminSessionInfo(this.session);
     }
 }

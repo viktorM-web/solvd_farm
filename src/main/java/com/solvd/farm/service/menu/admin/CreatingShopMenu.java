@@ -2,21 +2,25 @@ package com.solvd.farm.service.menu.admin;
 
 import com.solvd.farm.domain.Shop;
 import com.solvd.farm.service.Session;
+import com.solvd.farm.service.forAbstractFactory.AdminMenuMessage;
+import com.solvd.farm.service.forAbstractFactory.AdminSessionInfo;
+import com.solvd.farm.service.forAbstractFactory.IMenuMessage;
+import com.solvd.farm.service.forAbstractFactory.ISessionInfo;
 import com.solvd.farm.service.menu.IMenu;
 import com.solvd.farm.util.Parser;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Optional;
 
 @Slf4j
 public class CreatingShopMenu implements IMenu {
-    @Setter
+
     private Session session;
 
     @Override
-    public void execute() {
+    public IMenuMessage execute() {
         boolean exit = false;
+        String message = null;
         while (!exit) {
             log.info("you want to create shop " +
                      "\n by xml press [1]" +
@@ -27,7 +31,7 @@ public class CreatingShopMenu implements IMenu {
             switch (requestForMenu) {
                 case "0" -> {
                     exit = true;
-                    log.info("back to user menu");
+                    message = "back to user menu";
                 }
                 case "2" -> {
                     Shop shop = new Shop();
@@ -44,9 +48,9 @@ public class CreatingShopMenu implements IMenu {
                     session.getImpl().getShopRepository().save(shop);
 
                     if (shop.getId() != null) {
-                        log.info(shop + "was created");
+                        message = shop + "was created";
                     } else {
-                        log.info("failed to create ");
+                        message = "failed to create ";
                     }
                     exit = true;
                 }
@@ -65,9 +69,9 @@ public class CreatingShopMenu implements IMenu {
                     session.getImpl().getShopRepository().save(shop);
 
                     if (shop.getId() != null) {
-                        log.info(shop + "was created");
+                        message = shop + "was created";
                     } else {
-                        log.info("failed to create ");
+                        message = "failed to create ";
                     }
                     exit = true;
                 }
@@ -86,14 +90,21 @@ public class CreatingShopMenu implements IMenu {
                     session.getImpl().getShopRepository().save(shop);
 
                     if (shop.getId() != null) {
-                        log.info(shop + "was created");
+                        message = shop + "was created";
                     } else {
-                        log.info("failed to create ");
+                        message = "failed to create ";
                     }
                     exit = true;
                 }
                 default -> log.info("not correct data");
             }
         }
+        return new AdminMenuMessage(message);
+    }
+
+    @Override
+    public ISessionInfo setSession(Session session) {
+        this.session = session;
+        return new AdminSessionInfo(this.session);
     }
 }

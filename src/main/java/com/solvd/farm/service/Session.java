@@ -38,26 +38,25 @@ public class Session {
     }
 
     public Optional<IMenu> selectMenu() {
-        while (true){
+        while (true) {
             displayAvailableMenu();
             log.info("for exit press [0]");
             String select = scanner.nextLine();
-            if(select.matches("^[0-9]*$")){
+            if (select.matches("^[0-9]*$")) {
 
                 if (select.equals("0")) {
                     return Optional.empty();
                 }
 
-                if(!user.getRole().getActions().containsKey(Integer.valueOf(select))){
+                String nameAction = user.getRole().getActions().get(Integer.valueOf(select));
+                if (nameAction != null) {
+                    IMenu menu = TypeAction.getMenuBy(nameAction);
+                    menu.setSession(this);
+                    return Optional.of(menu);
+                } else {
                     log.info("not correct data");
                 }
-
-                String nameAction = user.getRole().getActions().get(Integer.valueOf(select));
-                IMenu menu = TypeAction.getMenuBy(nameAction);
-                menu.setSession(this);
-                return Optional.of(menu);
-
-            }else{
+            } else {
                 log.info("not correct data");
             }
         }
@@ -76,13 +75,13 @@ public class Session {
 
     public Integer getRequestIntegerForMenu(Long max) {
 
-        int result=0;
+        int result = 0;
 
         while (true) {
             String line = scanner.nextLine();
             try {
                 result = Integer.parseInt(line);
-                if(result>=0||result<=max){
+                if (result >= 0 || result <= max) {
                     return result;
                 }
             } catch (NumberFormatException e) {

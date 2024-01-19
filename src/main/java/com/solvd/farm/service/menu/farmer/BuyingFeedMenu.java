@@ -5,8 +5,11 @@ import com.solvd.farm.domain.Feed;
 import com.solvd.farm.domain.Offer;
 import com.solvd.farm.domain.enums.TypeFeed;
 import com.solvd.farm.service.Session;
+import com.solvd.farm.service.forAbstractFactory.FarmerMenuMessage;
+import com.solvd.farm.service.forAbstractFactory.FarmerSessionInfo;
+import com.solvd.farm.service.forAbstractFactory.IMenuMessage;
+import com.solvd.farm.service.forAbstractFactory.ISessionInfo;
 import com.solvd.farm.service.menu.IMenu;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -15,7 +18,6 @@ import java.util.Optional;
 @Slf4j
 public class BuyingFeedMenu implements IMenu {
 
-    @Setter
     private Session session;
 
     private void showAllOffers() {
@@ -34,7 +36,7 @@ public class BuyingFeedMenu implements IMenu {
     }
 
     @Override
-    public void execute() {
+    public IMenuMessage execute() {
         Farm farm = null;
         boolean exit = false;
         while (!exit && farm == null) {
@@ -43,7 +45,7 @@ public class BuyingFeedMenu implements IMenu {
             String requestForMenu = session.getRequestForMenu();
             if (requestForMenu.equals("0")) {
                 exit = true;
-                break;
+                return new FarmerMenuMessage("back to user menu");
             }
             Optional<Farm> maybeFarm = session.getImpl().getFarmRepository().findById(Long.valueOf(requestForMenu));
             if (maybeFarm.isEmpty()) {
@@ -60,7 +62,7 @@ public class BuyingFeedMenu implements IMenu {
             String requestForMenu = session.getRequestForMenu();
             if (requestForMenu.equals("0")) {
                 exit = true;
-                break;
+                return new FarmerMenuMessage("back to user menu");
             }
             Optional<Offer> maybeOffer = session.getImpl().getOfferRepository().findById(Long.valueOf(requestForMenu));
             if (maybeOffer.isEmpty()) {
@@ -71,6 +73,7 @@ public class BuyingFeedMenu implements IMenu {
             }
 
         }
+        String message = null;
         if (!exit) {
             Double farmBudget = farm.getBudget();
             Double price = offer.getPrice();
@@ -87,10 +90,17 @@ public class BuyingFeedMenu implements IMenu {
                     feed.setCount(feed.getCount() + 10.5);
                     session.getImpl().getFeedRepository().update(feed);
                 }
-                log.info("was bought 10.5 feed" + type);
+                message = "was bought 10.5 feed" + type;
             } else {
-                log.info("budget not enough for purchase");
+                message = "budget not enough for purchase";
             }
         }
+        return new FarmerMenuMessage(message);
+    }
+
+    @Override
+    public ISessionInfo setSession(Session session) {
+        this.session = session;
+        return new FarmerSessionInfo(this.session);
     }
 }

@@ -5,8 +5,11 @@ import com.solvd.farm.domain.Farm;
 import com.solvd.farm.domain.Offer;
 import com.solvd.farm.domain.enums.TypeAnimal;
 import com.solvd.farm.service.Session;
+import com.solvd.farm.service.forAbstractFactory.FarmerMenuMessage;
+import com.solvd.farm.service.forAbstractFactory.FarmerSessionInfo;
+import com.solvd.farm.service.forAbstractFactory.IMenuMessage;
+import com.solvd.farm.service.forAbstractFactory.ISessionInfo;
 import com.solvd.farm.service.menu.IMenu;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -17,7 +20,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class SellingAnimalMenu implements IMenu {
 
-    @Setter
     private Session session;
 
     private void showAllOffers() {
@@ -44,7 +46,7 @@ public class SellingAnimalMenu implements IMenu {
     }
 
     @Override
-    public void execute() {
+    public IMenuMessage execute() {
         Farm farm = null;
         boolean exit = false;
         while (!exit && farm == null) {
@@ -53,7 +55,7 @@ public class SellingAnimalMenu implements IMenu {
             String requestForMenu = session.getRequestForMenu();
             if (requestForMenu.equals("0")) {
                 exit = true;
-                break;
+                return new FarmerMenuMessage("back to user menu");
             }
             Optional<Farm> maybeFarm = session.getImpl().getFarmRepository().findById(Long.valueOf(requestForMenu));
             if (maybeFarm.isEmpty()) {
@@ -70,7 +72,7 @@ public class SellingAnimalMenu implements IMenu {
             String requestForMenu = session.getRequestForMenu();
             if (requestForMenu.equals("0")) {
                 exit = true;
-                break;
+                return new FarmerMenuMessage("back to user menu");
             }
             Optional<Offer> maybeOffer = session.getImpl().getOfferRepository().findById(Long.valueOf(requestForMenu));
             if (maybeOffer.isEmpty()) {
@@ -87,7 +89,7 @@ public class SellingAnimalMenu implements IMenu {
             String requestForMenu = session.getRequestForMenu();
             if (requestForMenu.equals("0")) {
                 exit = true;
-                break;
+                return new FarmerMenuMessage("back to user menu");
             }
             animal = animals.getOrDefault(Long.valueOf(requestForMenu), null);
             if (animal == null) {
@@ -96,8 +98,15 @@ public class SellingAnimalMenu implements IMenu {
                 farm.setBudget(farm.getBudget() + offer.getPrice());
                 session.getImpl().getFarmRepository().update(farm);
                 session.getImpl().getAnimalRepository().delete(animal.getId());
-                log.info("was sold " + animal + " for " + offer.getPrice());
+                return new FarmerMenuMessage("was sold " + animal + " for " + offer.getPrice());
             }
         }
+        return new FarmerMenuMessage("something go wrong");
+    }
+
+    @Override
+    public ISessionInfo setSession(Session session) {
+        this.session = session;
+        return new FarmerSessionInfo(this.session);
     }
 }

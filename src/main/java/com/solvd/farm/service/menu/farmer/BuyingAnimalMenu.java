@@ -5,8 +5,11 @@ import com.solvd.farm.domain.Farm;
 import com.solvd.farm.domain.Offer;
 import com.solvd.farm.domain.enums.TypeAnimal;
 import com.solvd.farm.service.Session;
+import com.solvd.farm.service.forAbstractFactory.FarmerMenuMessage;
+import com.solvd.farm.service.forAbstractFactory.FarmerSessionInfo;
+import com.solvd.farm.service.forAbstractFactory.IMenuMessage;
+import com.solvd.farm.service.forAbstractFactory.ISessionInfo;
 import com.solvd.farm.service.menu.IMenu;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -15,7 +18,6 @@ import java.util.Optional;
 @Slf4j
 public class BuyingAnimalMenu implements IMenu {
 
-    @Setter
     private Session session;
 
     private void showAllOffers() {
@@ -34,7 +36,8 @@ public class BuyingAnimalMenu implements IMenu {
     }
 
     @Override
-    public void execute() {
+    public IMenuMessage execute() {
+        String message = null;
         Farm farm = null;
         boolean exit = false;
         while (!exit && farm == null) {
@@ -43,7 +46,7 @@ public class BuyingAnimalMenu implements IMenu {
             String requestForMenu = session.getRequestForMenu();
             if (requestForMenu.equals("0")) {
                 exit = true;
-                break;
+                return new FarmerMenuMessage("back to user menu");
             }
             Optional<Farm> maybeFarm = session.getImpl().getFarmRepository().findById(Long.valueOf(requestForMenu));
             if (maybeFarm.isEmpty()) {
@@ -60,7 +63,7 @@ public class BuyingAnimalMenu implements IMenu {
             String requestForMenu = session.getRequestForMenu();
             if (requestForMenu.equals("0")) {
                 exit = true;
-                break;
+                return new FarmerMenuMessage("back to user menu");
             }
             Optional<Offer> maybeOffer = session.getImpl().getOfferRepository().findById(Long.valueOf(requestForMenu));
             if (maybeOffer.isEmpty()) {
@@ -91,8 +94,19 @@ public class BuyingAnimalMenu implements IMenu {
                     }
                 }
                 session.getImpl().getAnimalRepository().save(animal);
-                log.info("was bought " + animal);
+                if (message == null) {
+                    message = "was bought " + animal;
+                } else {
+                    message = message.concat("\nwas bought " + animal);
+                }
             }
         }
+        return new FarmerMenuMessage(message);
+    }
+
+    @Override
+    public ISessionInfo setSession(Session session) {
+        this.session = session;
+        return new FarmerSessionInfo(this.session);
     }
 }

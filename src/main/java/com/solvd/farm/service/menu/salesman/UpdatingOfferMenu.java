@@ -4,9 +4,12 @@ import com.solvd.farm.domain.Offer;
 import com.solvd.farm.domain.Shop;
 import com.solvd.farm.domain.enums.TypeOffer;
 import com.solvd.farm.service.Session;
+import com.solvd.farm.service.forAbstractFactory.IMenuMessage;
+import com.solvd.farm.service.forAbstractFactory.ISessionInfo;
+import com.solvd.farm.service.forAbstractFactory.SalesmanMenuMessage;
+import com.solvd.farm.service.forAbstractFactory.SalesmanSessionInfo;
 import com.solvd.farm.service.menu.IMenu;
 import com.solvd.farm.util.Validator;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -16,7 +19,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class UpdatingOfferMenu implements IMenu {
 
-    @Setter
     private Session session;
 
     private Map<Long, Shop> showAllShops() {
@@ -35,7 +37,7 @@ public class UpdatingOfferMenu implements IMenu {
     }
 
     @Override
-    public void execute() {
+    public IMenuMessage execute() {
         Shop shop = null;
         boolean exit = false;
         while (!exit && shop == null) {
@@ -122,5 +124,12 @@ public class UpdatingOfferMenu implements IMenu {
                 }
             }
         }
+        return new SalesmanMenuMessage("back to user menu");
+    }
+
+    @Override
+    public ISessionInfo setSession(Session session) {
+        this.session = session;
+        return new SalesmanSessionInfo(this.session);
     }
 }

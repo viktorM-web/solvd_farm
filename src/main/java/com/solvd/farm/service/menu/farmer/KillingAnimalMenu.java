@@ -5,8 +5,11 @@ import com.solvd.farm.domain.Farm;
 import com.solvd.farm.domain.Item;
 import com.solvd.farm.domain.enums.TypeItem;
 import com.solvd.farm.service.Session;
+import com.solvd.farm.service.forAbstractFactory.FarmerMenuMessage;
+import com.solvd.farm.service.forAbstractFactory.FarmerSessionInfo;
+import com.solvd.farm.service.forAbstractFactory.IMenuMessage;
+import com.solvd.farm.service.forAbstractFactory.ISessionInfo;
 import com.solvd.farm.service.menu.IMenu;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -15,7 +18,6 @@ import java.util.Optional;
 @Slf4j
 public class KillingAnimalMenu implements IMenu {
 
-    @Setter
     private Session session;
 
     private void showAllFarms() {
@@ -34,7 +36,7 @@ public class KillingAnimalMenu implements IMenu {
     }
 
     @Override
-    public void execute() {
+    public IMenuMessage execute() {
         Farm farm = null;
         boolean exit = false;
         while (!exit && farm == null) {
@@ -43,7 +45,7 @@ public class KillingAnimalMenu implements IMenu {
             String requestForMenu = session.getRequestForMenu();
             if (requestForMenu.equals("0")) {
                 exit = true;
-                break;
+                return new FarmerMenuMessage("back to user menu");
             }
             Optional<Farm> maybeFarm = session.getImpl().getFarmRepository().findById(Long.valueOf(requestForMenu));
             if (maybeFarm.isEmpty()) {
@@ -52,13 +54,14 @@ public class KillingAnimalMenu implements IMenu {
                 farm = maybeFarm.get();
             }
         }
+        String message = null;
         while (!exit) {
             showAllAnimal(farm);
             log.info("Enter animal's id which you want to kill \nor [0] if you want back to user menu");
             String requestForMenu = session.getRequestForMenu();
             if (requestForMenu.equals("0")) {
                 exit = true;
-                break;
+                return new FarmerMenuMessage("back to user menu");
             }
             Optional<Animal> maybeAnimal = session.getImpl().getAnimalRepository().findBy(Long.valueOf(requestForMenu), farm.getId());
             if (maybeAnimal.isEmpty()) {
@@ -77,7 +80,19 @@ public class KillingAnimalMenu implements IMenu {
                     session.getImpl().getItemRepository().update(item);
                 }
                 log.info("was add " + animal.getWeight() + " MEAT");
+                if (message != null) {
+                    message = message.concat("\nwas add " + animal.getWeight() + " MEAT");
+                } else {
+                    message = "was add " + animal.getWeight() + " MEAT";
+                }
             }
         }
+        return new FarmerMenuMessage(message);
+    }
+
+    @Override
+    public ISessionInfo setSession(Session session) {
+        this.session = session;
+        return new FarmerSessionInfo(this.session);
     }
 }

@@ -7,10 +7,10 @@
     "id":1,
     "name": "shop1",
     "user": {
-      "id": 1,
-      "log": "admin",
+      "id": 2,
+      "log": "salesman",
       "password": "1111",
-      "role": "ADMIN"
+      "role": "SALESMAN"
     }
   }
 }

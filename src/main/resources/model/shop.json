@@ -1,8 +1,8 @@
 {
-  "id": 99,
+  "id":null,
   "name": "shop2",
   "user": {
-    "id": 1,
+    "id": 5,
     "log": "Saler2",
     "password": "2222",
     "role": "SALESMAN"

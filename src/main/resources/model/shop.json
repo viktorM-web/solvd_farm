@@ -1,0 +1,28 @@
+{
+  "id": 99,
+  "name": "shop2",
+  "user": {
+    "id": 1,
+    "log": "Saler2",
+    "password": "2222",
+    "role": "SALESMAN"
+  },
+  "offers": [
+    {
+      "type": "SELL",
+      "description": "ANIMAL_COW",
+      "price": 99.99
+    },
+    {
+      "type": "SELL",
+      "description": "ANIMAL_CHICKEN",
+      "price": 1111.99
+    },
+    {
+      "type": "SELL",
+      "description": "ANIMAL_PIG",
+      "price": 99.99
+    }
+  ]
+}
+}

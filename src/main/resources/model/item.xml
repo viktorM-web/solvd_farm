@@ -1,0 +1,14 @@
+<item xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="item.xsd">
+    <type>EGG</type>
+    <count>99.99</count>
+    <farm id="1">
+        <name>Sanrise</name>
+        <budget>2500.7</budget>
+        <user id="1">
+            <login>farmer1</login>
+            <password>1111</password>
+            <role>FARMER</role>
+        </user>
+    </farm>
+</item>
